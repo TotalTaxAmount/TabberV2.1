@@ -38,17 +38,18 @@ public class Sever {
 
                     ServerThread client = new ServerThread(socket);
 
+
+
                     if (clients.size() == 0) {
                         client.start();
                     }
+                    client.setName("Client-" + clients.size());
                     clients.add(client);
 
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }).start();
-
-            System.out.println(clients);
 
         }
     }
