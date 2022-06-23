@@ -1,29 +1,40 @@
 package Client;
 
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.io.Reader;
+import java.net.InetAddress;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.Scanner;
 
 public class Client {
-    public static void main(String[] arg) {
-        try {
+    private static Socket socket = null;
 
-            Socket socketConnection = new Socket("127.0.0.1", 4765);
-
-
-            //QUERY PASSING
-            DataOutputStream outToServer = new DataOutputStream(socketConnection.getOutputStream());
-
+    public static void main(String[] arg) throws InterruptedException {
+        while (true) {
+            try {
+                socket = new Socket("127.0.0.1", 4765);
+                break;
+            } catch (IOException ignored) {
+                System.out.println("Error connecting to Server retrying in 5 seconds...");
+                Thread.sleep(5000);
+            }
+        }
+        while (true) {
+            System.out.println("Running...");
             Scanner reader = new Scanner(System.in);
-
-            System.out.println("IDK: ");
+            System.out.println("End? (y/n)");
             System.out.print("> ");
-            String SQL = reader.next();
 
-            outToServer.writeUTF(SQL);
+            String cmd = reader.next();
 
+            if (cmd.equalsIgnoreCase("y")) {
+                break;
+            }
 
-        } catch (Exception e) {System.out.println(e); }
+        }
+
     }
 }
+

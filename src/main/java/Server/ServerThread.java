@@ -12,9 +12,9 @@ public class ServerThread extends Thread {
 
     @Override
     public void run() {
-        InputStream inp = null;
-        BufferedReader brinp = null;
-        DataOutputStream out = null;
+        InputStream inp;
+        BufferedReader brinp;
+        DataOutputStream out;
         try {
             inp = socket.getInputStream();
             brinp = new BufferedReader(new InputStreamReader(inp));
@@ -25,7 +25,7 @@ public class ServerThread extends Thread {
         }
 
         String line;
-        while (true) {
+        while (isConnected()) {
             try {
                 line = brinp.readLine();
                 if ((line == null) || line.equalsIgnoreCase("QUIT")) {
@@ -36,9 +36,19 @@ public class ServerThread extends Thread {
                     out.flush();
                 }
             } catch (IOException e) {
-                e.printStackTrace();
-                return;
+                System.out.println("Error: " + e.getMessage());
             }
+
+        }
+    }
+
+
+    public boolean isConnected() {
+        try {
+            socket.getOutputStream().write(0);
+            return true;
+        } catch (IOException e) {
+            return false;
         }
     }
 }
