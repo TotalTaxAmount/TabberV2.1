@@ -1,11 +1,7 @@
-package Client;
+package com.invisiblecat.Client;
 
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.Reader;
-import java.net.InetAddress;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.Scanner;
 
 public class Client {

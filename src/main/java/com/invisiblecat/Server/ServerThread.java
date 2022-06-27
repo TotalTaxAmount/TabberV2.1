@@ -1,4 +1,4 @@
-package Server;
+package com.invisiblecat.Server;
 
 import java.io.*;
 import java.net.Socket;

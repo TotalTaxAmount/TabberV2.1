@@ -1,10 +1,11 @@
-package Server;
+package com.invisiblecat.Server;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public class Server {
 
@@ -13,15 +14,26 @@ public class Server {
     public static ServerSocket serverSocket = null;
     public static Socket socket = null;
 
-    public static void main(String args[]) throws IOException {
-        
+    private static LinkedBlockingQueue<String> log = new LinkedBlockingQueue<>();
+
+    public static void main(String[] args) throws IOException {
+
         try {
             serverSocket = new ServerSocket(port);
+            log.add("Server is online on port " + port);
         } catch (IOException e) {
-            System.out.println("Error starting server socket: ");
+            log.add("Error starting server socket: ");
             e.printStackTrace();
             return;
         }
+
+        new Thread(() -> {
+            while (log.iterator().hasNext()) {
+                String p = log.iterator().next();
+                System.out.print(p);
+                log.remove(p);
+            }
+        }).start();
 
         while (true) {
 //            Scanner reader = new Scanner(System.in);
@@ -29,6 +41,8 @@ public class Server {
 //            System.out.print("> ");
 //
 //            String cmd = reader.next();
+
+
             new Thread(() -> {
                 try {
                     socket = serverSocket.accept();
@@ -42,6 +56,7 @@ public class Server {
                     }
                     client.setName("Client-" + clients.size());
                     clients.add(client);
+                    log.add(client.getName() + " connected");
 
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -52,20 +67,18 @@ public class Server {
                 continue;
             }
 
-            System.out.println(clients);
-
             try {
                 for (ServerThread client : clients) {
                     if (!client.isConnected()) {
-                        System.out.println(client.getName() + " disconnected");
+                        log.add(client.getName() + " disconnected");
+                        client.socket.close();
                         client.interrupt();
                         clients.remove(client);
-                    } else {
-                        System.out.println(client.getName() + " connected");
+
                     }
                 }
             } catch (ConcurrentModificationException ignored) {
-                System.out.println("Error for looping through clients for some reason");
+                log.add("Error for looping through clients for some reason");
             }
         }
     }
